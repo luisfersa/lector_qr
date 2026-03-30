@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2ecc71">
+    
+    <title>QR Scanner Pro</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    
+    <style>
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            background: #f4f7f6;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        header { background: #2ecc71; color: white; width: 100%; text-align: center; padding: 15px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        #reader { width: 100%; max-width: 400px; margin-top: 20px; border: none !important; }
+        #result-container { 
+            padding: 20px; width: 90%; max-width: 400px; 
+            background: white; margin-top: 20px; border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;
+        }
+        button { background: #2ecc71; border: none; padding: 10px 20px; color: white; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Lector QR Móvil</h2>
+    </header>
+
+    <div id="reader"></div>
+
+    <div id="result-container">
+        <p id="result-text">Escanea un código para ver su contenido</p>
+        <div id="action-area"></div>
+    </div>
+
+    <script>
+        function onScanSuccess(decodedText) {
+            const resultText = document.getElementById('result-text');
+            const actionArea = document.getElementById('action-area');
+            
+            resultText.innerText = "Contenido: " + decodedText;
+
+            // Si es un enlace, mostrar botón para abrirlo
+            if (decodedText.startsWith("http")) {
+                actionArea.innerHTML = `<button onclick="window.location.href='${decodedText}'">Abrir Enlace</button>`;
+            } else {
+                actionArea.innerHTML = "";
+            }
+            
+            // Feedback vibración (solo Android)
+            if (navigator.vibrate) navigator.vibrate(100);
+        }
+
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", { 
+                fps: 15, 
+                qrbox: {width: 250, height: 250},
+                aspectRatio: 1.0 // Mantiene el video cuadrado en el móvil
+            }
+        );
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>
